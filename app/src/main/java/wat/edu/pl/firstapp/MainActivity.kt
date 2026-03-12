@@ -23,10 +23,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -39,6 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import wat.edu.pl.firstapp.ui.theme.FirstAppTheme
 
 
@@ -47,8 +54,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            licznik()
-
+            NavigationApp()
 
         }
     }
@@ -126,3 +132,66 @@ fun main_app() {
         }
     }
 }
+
+@Composable
+fun NavigationApp() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "first") {
+        composable("first") {
+            FirstScreen(
+                navigate ={
+                    navController.navigate("second")
+                }
+            )
+        }
+        composable(
+            route = "second"
+        ) {
+            SecondScreen( onBack = { navController.popBackStack() })
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FirstScreen(navigate: () -> Unit) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Moja Aplikacja Compose") }) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text="To jest pierwszy ekran aplikacji")
+            Button(onClick = { navigate() }) {
+                Text("Idź do drugiego ekranu")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SecondScreen( onBack: () -> Unit) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Moja Aplikacja Compose") }) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "To jest drugi ekran aplikacji")
+            Button(onClick = onBack) {
+                Text("Powrót")
+            }
+        }
+    }
+}
+
