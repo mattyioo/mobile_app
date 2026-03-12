@@ -1,52 +1,53 @@
 package wat.edu.pl.firstapp
 
+import android.R.attr.label
+import android.R.attr.value
+import android.R.attr.width
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import wat.edu.pl.firstapp.ui.theme.FirstappTheme
+import wat.edu.pl.firstapp.ui.theme.FirstAppTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            FirstappTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Jetpack Compose",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
+            Licz()
+//StatefulTextField()
 
-                    Hello_Jetpack()
-                    KliknijMnie {  }
-                    Licznik()
-                }
-            }
         }
     }
 }
@@ -54,58 +55,108 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Witaj w $name!",
+        text = "Witaj $name!",
         modifier = modifier
     )
 }
 
 @Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FirstappTheme {
-        Greeting("Android")
-    }
-}
+
 
 @Composable
-fun Hello_Jetpack(){
-    Text(text = "Witaj w Jetpack Compose", modifier = Modifier.padding(16.dp))
-}
-
-@Composable
-fun KliknijMnie(onClick: () -> Unit) {
-    var text by remember { mutableStateOf("") }
-    Column(Modifier.fillMaxWidth().absolutePadding(20.dp, 200.dp, 20.dp, 0.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text)
-        Button(onClick = { text = "Przycisk został kliknięty" },
-            modifier = Modifier.height(100.dp).width(300.dp)
-        ) {
-            Text("Kliknij mnie", color = Color.White, fontSize = 30.sp)
-        }
-    }
-}
-
-@Composable
-fun Licznik() {
-    var licznik by remember { mutableStateOf(0) }
+fun BasicTextButton() {
+    val context = LocalContext.current
     Column(
-        Modifier.fillMaxWidth().absolutePadding(20.dp, 50.dp, 20.dp, 0.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Button(onClick = { licznik++ }, modifier = Modifier.height(50.dp).width(150.dp)) {
-            Text("Zwiększ")
+
+        FilledTonalButton( onClick = { Fun1(context) })
+        {
+            Text(text = "Kliknij mnie") // Button content (text only)
         }
-        Text("Licznik:\t" + licznik.toString())
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun BasicTextButtonPreview() {
+    BasicTextButton()
+}
+
+
+private fun Fun1(context: Context){
+    Toast.makeText(context, "Przycisk zostal klikniety.", Toast.LENGTH_SHORT).show()
 }
 
 @Composable
-fun PoleTekstowe(){
-    var text by remember {mutableStateOf("")}
-    TextField(
-            label = { Text("Podaj Imie") },
-            value = rememberTextFieldState(initialText = "Hello"),
-            onValueChange = { }
+fun Licz() {
+    val context = LocalContext.current
+    var number by remember { mutableStateOf(0) }
+    var text by remember { mutableStateOf("") }
+    var text1 by remember { mutableStateOf("") }
+    val list=remember { mutableStateListOf<String>() }
+    val mod=Modifier.padding(10.dp)
+    Column(
+        modifier = Modifier.padding(24.dp).fillMaxSize(),
+//verticalArrangement = Arrangement.SpaceEvenly,
+//horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Witaj w JetpackCompose!", modifier = mod
         )
+        FilledTonalButton( onClick = { Fun1(context) }, modifier = mod)
+        {
+            Text(text = "Kliknij mnie", modifier = mod) // Button content (text only)
+        }
+        Row(modifier = Modifier.width(180.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FilledTonalButton(onClick = { number++ }, modifier = mod)
+            {
+                Text(text = "Zwieksz") // Button content (text only)
+            }
+            Text(text = "Licznik: $number", modifier = mod)
+        }
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Podaj imie") },
+            modifier = mod
+        )
+        if (text.isEmpty()) {
+            Text("Witaj!", modifier = mod)
+        } else {
+            Text("Witaj, $text", modifier = mod)
+        }
+        Row(modifier = Modifier.width(300.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            TextField(
+                value = text1,
+                onValueChange = { text1 = it },
+                label = { Text("Dodaj element") },
+                modifier = mod.width(180.dp)
+            )
 
+            FilledTonalButton(onClick = { list.add(text1)
+            }, modifier = mod)
+            {
+                Text(text = "Dodaj", modifier = mod) // Button content (text only)
+            }
+
+        }
+        LazyColumn(modifier = mod){
+            itemsIndexed(items = list) {index, flower ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = flower, modifier = mod)
+                    FilledTonalButton(onClick ={list.removeAt(index)} , modifier = mod,) {
+                        Text("Usuń")
+                    }
+                }
+            }
+        }
+    }
 }
