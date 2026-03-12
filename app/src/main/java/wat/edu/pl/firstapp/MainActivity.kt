@@ -56,12 +56,12 @@ class MainActivity : ComponentActivity() {
 
 
 
-private fun Fun1(context: Context){
+private fun pop_up(context: Context){
     Toast.makeText(context, "Przycisk zostal klikniety.", Toast.LENGTH_SHORT).show()
 }
 
 @Composable
-fun licznik() {
+fun main_app() {
     val context = LocalContext.current
     var number by rememberSaveable() { mutableStateOf(0) }
     var text by rememberSaveable() { mutableStateOf("") }
@@ -74,7 +74,7 @@ fun licznik() {
         Text(
             text = "Witaj w JetpackCompose!", modifier = mod
         )
-        FilledTonalButton( onClick = { Fun1(context) }, modifier = mod)
+        FilledTonalButton( onClick = { pop_up(context) }, modifier = mod)
         {
             Text(text = "Kliknij mnie", modifier = mod) // Button content (text only)
         }
