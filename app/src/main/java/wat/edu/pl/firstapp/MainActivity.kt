@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,21 +47,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Licz()
-//StatefulTextField()
+            licznik()
+
 
         }
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Witaj $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 
 
@@ -90,17 +83,15 @@ private fun Fun1(context: Context){
 }
 
 @Composable
-fun Licz() {
+fun licznik() {
     val context = LocalContext.current
-    var number by remember { mutableStateOf(0) }
-    var text by remember { mutableStateOf("") }
-    var text1 by remember { mutableStateOf("") }
-    val list=remember { mutableStateListOf<String>() }
-    val mod=Modifier.padding(10.dp)
+    var number by rememberSaveable() { mutableStateOf(0) }
+    var text by rememberSaveable() { mutableStateOf("") }
+    var text1 by rememberSaveable() { mutableStateOf("") }
+    val list=rememberSaveable() { mutableStateListOf<String>() }
+    val mod=Modifier.padding(5.dp)
     Column(
-        modifier = Modifier.padding(24.dp).fillMaxSize(),
-//verticalArrangement = Arrangement.SpaceEvenly,
-//horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(24.dp).fillMaxSize().paddingFromBaseline(top = 50.dp)
     ) {
         Text(
             text = "Witaj w JetpackCompose!", modifier = mod
@@ -109,16 +100,13 @@ fun Licz() {
         {
             Text(text = "Kliknij mnie", modifier = mod) // Button content (text only)
         }
-        Row(modifier = Modifier.width(180.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
             FilledTonalButton(onClick = { number++ }, modifier = mod)
             {
                 Text(text = "Zwieksz") // Button content (text only)
             }
             Text(text = "Licznik: $number", modifier = mod)
-        }
+
         TextField(
             value = text,
             onValueChange = { text = it },
