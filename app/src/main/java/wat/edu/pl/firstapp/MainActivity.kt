@@ -53,29 +53,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-@Preview(showBackground = true)
 
-
-@Composable
-fun BasicTextButton() {
-    val context = LocalContext.current
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
-        FilledTonalButton( onClick = { Fun1(context) })
-        {
-            Text(text = "Kliknij mnie") // Button content (text only)
-        }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun BasicTextButtonPreview() {
-    BasicTextButton()
-}
 
 
 private fun Fun1(context: Context){
