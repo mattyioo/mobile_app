@@ -1,5 +1,6 @@
 package wat.edu.pl.firstapp
 
+import android.R.attr.label
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,26 +60,92 @@ private fun popUp(context: Context){
 }
 
 @Composable
-fun ScreenUI(){
-    val vm : MainViewModel = viewModel()
+fun ScreenUI() {
+    val vm: MainViewModel = viewModel()
     val mod = Modifier.padding(5.dp)
     Column(
-        modifier = Modifier.padding(24.dp).fillMaxSize().paddingFromBaseline(top = 50.dp)){
+        modifier = Modifier.padding(25.dp).fillMaxSize().paddingFromBaseline(top = 50.dp)
+    ) {
+        Text(
+            "Laboratorium 2.1 - ViewModel i Stan",
+            fontSize = 18.sp,
+            modifier = mod,
+            fontWeight = FontWeight.Medium
+        )
 
-        Text("Laboratorium 2.1 - ViewModel i Stan", fontSize = 22.sp, modifier = mod)
-        Text("Pole Tekstowe (stan w ViewModel)", fontSize = 20.sp, modifier = mod)
+        Text(
+            "Licznik (stan w ViewModel)",
+            fontSize = 15.sp,
+            modifier = mod,
+            fontWeight = FontWeight.Medium
+        )
+        Row(
+            modifier = Modifier.width(300.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FilledTonalButton(onClick = { vm.incrementCounter() }, modifier = mod) {
+                Text("Zwiększ", modifier = mod)
+            }
+            Text("Licznik: ${vm.counter}", modifier = mod)
+        }
+
+        Text(
+            "Pole Tekstowe (stan w ViewModel)",
+            fontSize = 15.sp,
+            modifier = mod,
+            fontWeight = FontWeight.Medium
+        )
         OutlinedTextField(
-                value = vm.name,
-                onValueChange = { vm.name = it},
-                modifier = mod,
-            )
+            value = vm.name,
+            onValueChange = { vm.setname(it) },
+            label = { Text("Podaj imię") },
+            modifier = mod,
+        )
         if (vm.name.isEmpty()) {
             Text("Witaj!", modifier = mod)
         } else {
-            Text("Witaj, $vm.name", modifier = mod)
-        }
+            Text("Witaj, ${vm.name}!", modifier = mod)
         }
 
+
+        Text(
+            "Lista (stan w ViewModel)",
+            fontSize = 15.sp,
+            modifier = mod,
+            fontWeight = FontWeight.Medium
+        )
+        Row(
+            modifier = Modifier.width(300.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                value = vm.newItemText,
+                onValueChange = { vm.setnewItemText(it) },
+                label = { Text("Dodaj element") },
+                modifier = mod.width(180.dp)
+            )
+
+            FilledTonalButton(onClick = {
+                vm.additem()
+            }, modifier = mod)
+            {
+                Text(text = "Dodaj", modifier = mod) // Button content (text only)
+            }
+
+        }
+        LazyColumn(modifier = mod) {
+            itemsIndexed(items = vm.itemsList) { index, flower ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = flower, modifier = mod)
+                    FilledTonalButton(onClick = { vm.removeitem(flower) }, modifier = mod) {
+                        Text("Usuń")
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
