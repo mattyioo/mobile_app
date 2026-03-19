@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -33,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -43,8 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NavigationApp()
-//            MainApp()
+            ScreenUI()
         }
     }
 }
@@ -53,6 +55,29 @@ class MainActivity : ComponentActivity() {
 
 private fun popUp(context: Context){
     Toast.makeText(context, "Przycisk zostal klikniety.", Toast.LENGTH_SHORT).show()
+}
+
+@Composable
+fun ScreenUI(){
+    val vm : MainViewModel = viewModel()
+    val mod = Modifier.padding(5.dp)
+    Column(
+        modifier = Modifier.padding(24.dp).fillMaxSize().paddingFromBaseline(top = 50.dp)){
+
+        Text("Laboratorium 2.1 - ViewModel i Stan", fontSize = 22.sp, modifier = mod)
+        Text("Pole Tekstowe (stan w ViewModel)", fontSize = 20.sp, modifier = mod)
+        OutlinedTextField(
+                value = vm.name,
+                onValueChange = { vm.name = it},
+                modifier = mod,
+            )
+        if (vm.name.isEmpty()) {
+            Text("Witaj!", modifier = mod)
+        } else {
+            Text("Witaj, $vm.name", modifier = mod)
+        }
+        }
+
 }
 
 @Composable
