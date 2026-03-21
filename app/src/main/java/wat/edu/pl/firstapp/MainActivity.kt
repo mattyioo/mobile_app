@@ -291,22 +291,25 @@ fun SecondScreen( onBack: () -> Unit) {
 
 @Composable
 fun ListScreen(){
+    val mod = Modifier.padding(5.dp)
     val list =  mutableListOf<String>("Element 1", "Element 2", "Element 3", "Element 4", "Element 5")
-    Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = Arrangement.Top) {
-        Text("Lista", fontSize = 25.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(5.dp))
-        LazyColumn(modifier = Modifier.padding(5.dp)) {
+    Column(modifier = Modifier.fillMaxSize().paddingFromBaseline(top = 75.dp)) {
+        Text("Lista", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 10.dp))
+        LazyColumn(modifier = mod) {
             items(items = list) { list ->
-                Text(list, fontSize = 15.sp, modifier = Modifier.padding(5.dp).fillMaxWidth().background(color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(40.dp)).padding(5.dp), fontWeight = FontWeight.Bold)
+                Text(list,textAlign = TextAlign.Start, fontSize = 25.sp, modifier = mod.fillMaxWidth().background(color = Color.LightGray, shape = RoundedCornerShape(10.dp)).padding(15.dp), fontWeight = FontWeight.Medium)
             }
         }
     }
 }
 @Composable
 fun HomeScreen() {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+    Column(modifier = Modifier.fillMaxSize().paddingFromBaseline(top = 75.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Text("Home", textAlign = TextAlign.Center, fontSize = 25.sp, fontWeight = FontWeight.Bold)
         Text("Aplikacja z Bottom Navigation oraz ustawieniami motywu (DataStore)", textAlign = TextAlign.Center)
 
     }
 }
-fun SettingsScreen(){}
+fun SettingsScreen(){
+
+}
