@@ -1,5 +1,6 @@
 package wat.edu.pl.firstapp
 
+import android.R.attr.checked
 import android.R.attr.label
 import android.content.Context
 import android.os.Bundle
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -37,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,7 +62,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 //            HomeScreen()
-            ListScreen()
+//            ListScreen()
+            SettingsScreen()
         }
     }
 }
@@ -310,6 +314,19 @@ fun HomeScreen() {
 
     }
 }
-fun SettingsScreen(){
 
+@Composable
+fun SettingsScreen(){
+    val mod = Modifier.padding(5.dp)
+    var isDarkMode by rememberSaveable() { mutableStateOf(false) }
+
+    Column(modifier = mod.fillMaxSize().paddingFromBaseline(top = 75.dp)){
+        Text("Settings", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = mod)
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically){
+            Text("Tryb ciemny (Dark Mode)", fontSize = 20.sp, modifier = mod, fontWeight = FontWeight.Medium)
+            Switch(checked = isDarkMode, onCheckedChange = {isDarkMode = it}, modifier = Modifier.padding(end = 5.dp))
+        }
+    }
 }
