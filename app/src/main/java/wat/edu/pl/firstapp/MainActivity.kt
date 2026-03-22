@@ -337,6 +337,40 @@ fun AppNavHost(
 }
 
 @Composable
+fun MainScreen(){
+    val navController = rememberNavController()
+    val mod = Modifier.padding(5.dp)
+    val startDestination = Destination.Home
+    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
+
+    Scaffold(
+        modifier = mod,
+        bottomBar = {
+            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+                Destination.entries.forEachIndexed { index, destination ->
+                    NavigationBarItem(
+                        selected = selectedDestination == index,
+                        onClick = {
+                            navController.navigate(route = destination.route)
+                            selectedDestination = index
+                        },
+                        icon = {
+                            Icon(
+                                destination.icon,
+                                contentDescription = destination.contentDescription
+                            )
+                        },
+                        label = { Text(destination.label) }
+                    )
+                }
+            }
+        }
+    ) { contentPadding ->
+        AppNavHost(navController, startDestination, modifier = Modifier.padding(contentPadding))
+    }
+}
+
+@Composable
 fun ListScreen(){
     val mod = Modifier.padding(5.dp)
     val list =  mutableListOf<String>("Element 1", "Element 2", "Element 3", "Element 4", "Element 5")
