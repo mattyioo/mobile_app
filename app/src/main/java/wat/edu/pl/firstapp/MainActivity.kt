@@ -59,11 +59,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 
 class MainActivity : ComponentActivity() {
@@ -71,15 +76,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-//            HomeScreen()
-//            ListScreen()
-//            SettingsScreen()
             MainScreen()
         }
     }
 }
 
-
+val Context.dataStore by preferencesDataStore("settings")
+object SettingsDataStore {
+    private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
+    fun getDarkMode(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[DARK_MODE_KEY] ?: false
+        }
+    }
+    suspend fun setDarkMode(context: Context, value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[DARK_MODE_KEY] = value
+        }
+    }
+}
 
 private fun popUp(context: Context){
     Toast.makeText(context, "Przycisk zostal klikniety.", Toast.LENGTH_SHORT).show()
