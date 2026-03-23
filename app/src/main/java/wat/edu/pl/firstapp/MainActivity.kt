@@ -42,12 +42,16 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -69,6 +73,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -76,12 +81,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen()
+            IsDarkApp()
         }
     }
 }
 
-val Context.dataStore by preferencesDataStore("settings")
+val Context.dataStore by preferencesDataStore("theme")
 object SettingsDataStore {
     private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
     fun getDarkMode(context: Context): Flow<Boolean> {
@@ -96,6 +101,15 @@ object SettingsDataStore {
     }
 }
 
+@Composable
+fun IsDarkApp(){
+    val context = LocalContext.current
+    val darkMode by SettingsDataStore.getDarkMode(context).collectAsState(initial = false)
+    MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()){
+        MainScreen()
+    }
+
+}
 private fun popUp(context: Context){
     Toast.makeText(context, "Przycisk zostal klikniety.", Toast.LENGTH_SHORT).show()
 }
@@ -393,7 +407,7 @@ fun ListScreen(){
         Text("Lista", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 10.dp))
         LazyColumn(modifier = mod) {
             items(items = list) { list ->
-                Text(list,textAlign = TextAlign.Start, fontSize = 25.sp, modifier = mod.fillMaxWidth().background(color = Color.LightGray, shape = RoundedCornerShape(10.dp)).padding(15.dp), fontWeight = FontWeight.Medium)
+                Text(list,textAlign = TextAlign.Start, fontSize = 25.sp, modifier = mod.fillMaxWidth().background(color = MaterialTheme.colorScheme.onSecondary, shape = RoundedCornerShape(10.dp)).padding(15.dp), fontWeight = FontWeight.Medium)
             }
         }
     }
@@ -409,16 +423,29 @@ fun HomeScreen() {
 
 @Composable
 fun SettingsScreen(){
-    val mod = Modifier.padding(5.dp)
-    var isDarkMode by rememberSaveable() { mutableStateOf(false) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    Column(modifier = mod.fillMaxSize().paddingFromBaseline(top = 75.dp)){
-        Text("Settings", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = mod)
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically){
-            Text("Tryb ciemny (Dark Mode)", fontSize = 20.sp, modifier = mod, fontWeight = FontWeight.Medium)
-            Switch(checked = isDarkMode, onCheckedChange = {isDarkMode = it}, modifier = Modifier.padding(end = 5.dp))
+    val darkModeFlow = remember {
+        SettingsDataStore.getDarkMode(context)
+    }
+
+    val darkMode by darkModeFlow.collectAsState(initial = false)
+    Column(
+        modifier = Modifier.padding(5.dp).fillMaxSize().paddingFromBaseline(top = 75.dp)
+    )
+    {
+        Text("Settings", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(5.dp))
+        Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+            Text("Tryb ciemny (Dark Mode)",  fontSize = 20.sp, modifier = Modifier.padding(5.dp), fontWeight = FontWeight.Medium)
+            Switch(
+                checked = darkMode,
+                onCheckedChange = { isChecked ->
+                    scope.launch {
+                        SettingsDataStore.setDarkMode(context, isChecked)
+                    }
+                }
+            )
         }
     }
 }
