@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            IsDarkApp()
+            IsDarkApp(todoViewModel)
         }
     }
 }
@@ -399,7 +400,7 @@ fun MainScreen(todoViewModel: TodoViewModel){
             }
         }
     ) { contentPadding ->
-        AppNavHost(navController, startDestination, modifier = Modifier.padding(contentPadding))
+        AppNavHost(navController, startDestination, modifier = Modifier.padding(contentPadding), todoViewModel)
     }
 }
 
@@ -420,7 +421,7 @@ fun ListScreen(viewModel: TodoViewModel){
         Column(Modifier
             .fillMaxSize()
             .padding(24.dp)) {
-            Text("Lista", fontSize = 30.sp, fontWeight = FontWeight.Medium)
+            Text("List", fontSize = 30.sp, fontWeight = FontWeight.Medium)
             LazyColumn(
                 modifier = Modifier.padding(4.dp)
             ) {
@@ -439,9 +440,10 @@ fun ListScreen(viewModel: TodoViewModel){
                                 Text(text = todo.title, modifier = Modifier.width(230.dp))
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
-                                    onClick = { viewModel.delete(todo) }
+                                    onClick = { viewModel.delete(todo) },
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
                                 ) {
-                                    Text("Usuń")
+                                    Text("Usuń", maxLines = 1, softWrap = false)
                                 }
                             }
 
