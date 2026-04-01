@@ -12,8 +12,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
@@ -26,11 +28,14 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -77,7 +82,13 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var todoViewModel: TodoViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
+        val db = AppDatabase.getDatabase(applicationContext)
+        val dao = db.todoDao()
+        val repository = TodoRepository(dao)
+        todoViewModel = TodoViewModel(repository)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -102,11 +113,11 @@ object SettingsDataStore {
 }
 
 @Composable
-fun IsDarkApp(){
+fun IsDarkApp(todoViewModel: TodoViewModel){
     val context = LocalContext.current
     val darkMode by SettingsDataStore.getDarkMode(context).collectAsState(initial = false)
     MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()){
-        MainScreen()
+        MainScreen(todoViewModel)
     }
 
 }
@@ -366,7 +377,7 @@ fun AppNavHost(
 }
 
 @Composable
-fun MainScreen(){
+fun MainScreen(todoViewModel: TodoViewModel){
     val navController = rememberNavController()
     val mod = Modifier.padding(5.dp)
     val startDestination = Destination.Home
@@ -400,18 +411,84 @@ fun MainScreen(){
 }
 
 @Composable
-fun ListScreen(){
-    val mod = Modifier.padding(5.dp)
-    val list =  mutableListOf<String>("Element 1", "Element 2", "Element 3", "Element 4", "Element 5")
-    Column(modifier = Modifier.fillMaxSize().paddingFromBaseline(top = 75.dp)) {
-        Text("Lista", fontSize = 35.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 10.dp))
-        LazyColumn(modifier = mod) {
-            items(items = list) { list ->
-                Text(list,textAlign = TextAlign.Start, fontSize = 25.sp, modifier = mod.fillMaxWidth().background(color = MaterialTheme.colorScheme.onSecondary, shape = RoundedCornerShape(10.dp)).padding(15.dp), fontWeight = FontWeight.Medium)
+fun ListScreen(viewModel: TodoViewModel){
+    val todos by viewModel.todos.collectAsState(initial=emptyList())
+    var showDialog by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick={showDialog=true}
+            ) {
+                Text("+")
+            }
+        }
+    ) {padding ->
+        Column(Modifier
+            .fillMaxSize()
+            .padding(24.dp)) {
+            Text("Lista", fontSize = 30.sp, fontWeight = FontWeight.Medium)
+            LazyColumn(
+                modifier = Modifier.padding(4.dp)
+            ) {
+                items(todos) { todo ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .fillMaxWidth()){
+                                Text(text = todo.title, modifier = Modifier.width(230.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Button(
+                                    onClick = { viewModel.delete(todo) }
+                                ) {
+                                    Text("Usuń")
+                                }
+                            }
+
+                        }
+                    }
+                }
             }
         }
     }
+    if (showDialog){
+        AlertDialog(
+            onDismissRequest = {showDialog=false},
+            title={Text("Dodaj")},
+            text= {
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Treść") }
+                )
+            },
+            confirmButton = {
+                Button(onClick={
+                    if (text.isNotBlank()){
+                        viewModel.add(text)
+                        text=""
+                        showDialog=false
+                    }
+                }) {
+                    Text("Dodaj")
+                }
+            },
+            dismissButton = {
+                Button(onClick={showDialog=false}){
+                    Text("Anuluj")
+                }
+            }
+        )
+    }
 }
+
 @Composable
 fun HomeScreen() {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
