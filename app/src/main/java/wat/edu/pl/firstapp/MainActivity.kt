@@ -358,23 +358,16 @@ enum class Destination(
 fun AppNavHost(
     navController: NavHostController,
     startDestination: Destination,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController,
-        startDestination = startDestination.route
-    ) {
-        Destination.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    Destination.Home -> HomeScreen()
-                    Destination.List -> ListScreen()
-                    Destination.Settings -> SettingsScreen()
-                }
-            }
-        }
+    modifier: Modifier=Modifier,
+    todoViewModel: TodoViewModel
+){
+    NavHost(navController,startDestination.route,modifier){
+        composable(Destination.Home.route){HomeScreen()}
+        composable(Destination.List.route){ListScreen(todoViewModel)}
+        composable(Destination.Settings.route){SettingsScreen()}
     }
 }
+
 
 @Composable
 fun MainScreen(todoViewModel: TodoViewModel){
