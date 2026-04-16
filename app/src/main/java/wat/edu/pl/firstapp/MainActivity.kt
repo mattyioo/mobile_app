@@ -112,6 +112,10 @@ object SettingsDataStore {
         }
     }
 }
+fun formatDate(timestamp: Long): String {
+    val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+    return sdf.format(java.util.Date(timestamp))
+}
 
 @Composable
 fun IsDarkApp(todoViewModel: TodoViewModel){
@@ -437,7 +441,7 @@ fun ListScreen(viewModel: TodoViewModel){
                                 modifier = Modifier
                                     .padding(5.dp)
                                     .fillMaxWidth()){
-                                Text(text = todo.title, modifier = Modifier.width(230.dp))
+                                Text(text = todo.title + " Dodano: "+ formatDate(todo.createdAt),  modifier = Modifier.width(230.dp))
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
                                     onClick = { viewModel.delete(todo) },

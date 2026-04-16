@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+//ViewModel przechowuje stan UI i wywołuje metody repozytorium.
 class TodoViewModel(
     private val repository: TodoRepository
 ) : ViewModel(){
