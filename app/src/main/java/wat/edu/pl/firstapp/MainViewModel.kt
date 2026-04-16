@@ -41,7 +41,7 @@ class MainViewModel(private val repository: Repository = Repository()) : ViewMod
     var error by mutableStateOf<String?>(null)
         private set
 
-    var data by mutableStateOf<List<PostDto>>(emptyList())
+    var data by mutableStateOf<List<PostDto>>(emptyList()) //lista wyników z API
         private set
 
     fun refresh() {

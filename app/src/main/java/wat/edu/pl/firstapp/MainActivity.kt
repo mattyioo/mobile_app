@@ -84,12 +84,13 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private lateinit var todoViewModel: TodoViewModel
+    private lateinit var viewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         val db = AppDatabase.getDatabase(applicationContext)
         val dao = db.todoDao()
         val repository = TodoRepository(dao)
         todoViewModel = TodoViewModel(repository)
-
+        viewModel = MainViewModel()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -118,11 +119,11 @@ fun formatDate(timestamp: Long): String {
 }
 
 @Composable
-fun IsDarkApp(todoViewModel: TodoViewModel){
+fun IsDarkApp(todoViewModel: TodoViewModel, viewModel: MainViewModel){
     val context = LocalContext.current
     val darkMode by SettingsDataStore.getDarkMode(context).collectAsState(initial = false)
     MaterialTheme(colorScheme = if (darkMode) darkColorScheme() else lightColorScheme()){
-        MainScreen(todoViewModel)
+        MainScreen(todoViewModel, viewModel)
     }
 
 }
@@ -364,10 +365,11 @@ fun AppNavHost(
     navController: NavHostController,
     startDestination: Destination,
     modifier: Modifier=Modifier,
-    todoViewModel: TodoViewModel
+    todoViewModel: TodoViewModel,
+    viewModel: MainViewModel
 ){
     NavHost(navController,startDestination.route,modifier){
-        composable(Destination.Home.route){HomeScreen()}
+        composable(Destination.Home.route){HomeScreen(viewModel)}
         composable(Destination.List.route){ListScreen(todoViewModel)}
         composable(Destination.Settings.route){SettingsScreen()}
     }
@@ -375,7 +377,7 @@ fun AppNavHost(
 
 
 @Composable
-fun MainScreen(todoViewModel: TodoViewModel){
+fun MainScreen(todoViewModel: TodoViewModel, viewModel: MainViewModel){
     val navController = rememberNavController()
     val mod = Modifier.padding(5.dp)
     val startDestination = Destination.Home
@@ -404,7 +406,7 @@ fun MainScreen(todoViewModel: TodoViewModel){
             }
         }
     ) { contentPadding ->
-        AppNavHost(navController, startDestination, modifier = Modifier.padding(contentPadding), todoViewModel)
+        AppNavHost(navController, startDestination, modifier = Modifier.padding(contentPadding), todoViewModel, viewModel)
     }
 }
 
@@ -489,7 +491,7 @@ fun ListScreen(viewModel: TodoViewModel){
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: MainViewModel) {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Text("Home", textAlign = TextAlign.Center, fontSize = 35.sp, fontWeight = FontWeight.Bold)
         Text("Aplikacja z Bottom Navigation oraz ustawieniami motywu (DataStore)", textAlign = TextAlign.Center, fontSize = 18.sp, fontWeight = FontWeight.Medium)
