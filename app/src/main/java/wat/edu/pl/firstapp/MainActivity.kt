@@ -495,6 +495,7 @@ fun ListScreen(viewModel: TodoViewModel){
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
+    //kiedy uzytkownik wlaczas trone to wykonuje sie ten kod czyli pobieranie danych z API
     LaunchedEffect(Unit) {
         viewModel.refresh()
     }
@@ -510,7 +511,7 @@ fun HomeScreen(viewModel: MainViewModel) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
+    //tutaj program decyduje co jest wyswietlane uzytkownikowi zależnie od stanu
         when {
             viewModel.loading -> {
                 Box(
