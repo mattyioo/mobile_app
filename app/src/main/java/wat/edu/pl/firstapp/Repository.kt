@@ -1,5 +1,6 @@
 package wat.edu.pl.firstapp
 
+
 class Repository(
     private val api: APIInterface = RetrofitProvider.api
 ) {
