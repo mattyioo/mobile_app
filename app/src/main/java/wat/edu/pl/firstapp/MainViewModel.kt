@@ -35,16 +35,18 @@ class MainViewModel(private val repository: Repository = Repository()) : ViewMod
     }
 
     //Retrofit zadanie 4
+    //czy dane są w fazie ładowania czy nie
     var loading by mutableStateOf(false)
         private set
-
+//Error w razie błędu (string)
     var error by mutableStateOf<String?>(null)
         private set
-
+//tutaj zapisujemy dane do PostDto
     var data by mutableStateOf<List<PostDto>>(emptyList()) //lista wyników z API
         private set
 
     fun refresh() {
+        //oznacza że dane są ładowane w tle, zeby nie freezowac aplikacji
         viewModelScope.launch {
             loading = true
             error = null
