@@ -455,7 +455,6 @@ fun ListScreen(viewModel: TodoViewModel){
                                     Text("Usuń", maxLines = 1, softWrap = false)
                                 }
                             }
-
                         }
                     }
                 }
@@ -495,7 +494,7 @@ fun ListScreen(viewModel: TodoViewModel){
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
-    //kiedy uzytkownik wlaczas trone to wykonuje sie ten kod czyli pobieranie danych z API
+    //kiedy uzytkownik wlacza strone to wykonuje sie ten kod czyli pobieranie danych z API
     LaunchedEffect(Unit) {
         viewModel.refresh()
     }
@@ -561,7 +560,6 @@ fun HomeScreen(viewModel: MainViewModel) {
             }
         }
     }
-
 }
 
 @Composable
